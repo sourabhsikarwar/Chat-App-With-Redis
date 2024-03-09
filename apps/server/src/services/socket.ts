@@ -1,11 +1,12 @@
 import { Server } from "socket.io";
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
+import 'dotenv/config'
 
-const redisConfig = {
-  host: "redis-1edac2c7-chat-app-1812.a.aivencloud.com",
+const redisConfig: RedisOptions = {
+  host: process.env.REDIS_HOST,
   port: 27388,
-  username: "default",
-  password: "AVNS_stgDM8s4xeoXmWMJ3L1",
+  username: process.env.REDIS_USERNAME,
+  password: process.env.REDIS_PWD,
 }
 
 const pub = new Redis(redisConfig);

@@ -4,7 +4,7 @@ import { useSocket } from "../context/SocketProvider";
 import classes from "./page.module.css";
 
 export default function Page() {
-  const { sendMessage } = useSocket();
+  const { sendMessage, messages } = useSocket();
   const [message, setMessage] = useState("");
 
   return (
@@ -21,6 +21,9 @@ export default function Page() {
         />
         <button className={classes["button"]} onClick={() => sendMessage(message)}>Send</button>
       </div>
+      <ul>
+        {messages.map((msg, ind) => <li key={ind}>{msg}</li>)}
+      </ul>
     </div>
   );
 }

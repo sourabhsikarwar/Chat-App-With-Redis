@@ -4,7 +4,7 @@ import 'dotenv/config'
 
 const redisConfig: RedisOptions = {
   host: process.env.REDIS_HOST,
-  port: 27388,
+  port: process.env.REDIS_PORT as unknown as number,
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PWD,
 }

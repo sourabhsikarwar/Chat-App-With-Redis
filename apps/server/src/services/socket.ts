@@ -1,13 +1,14 @@
 import { Server } from "socket.io";
 import Redis, { RedisOptions } from "ioredis";
-import 'dotenv/config'
+import { produceMessage } from "./kafka";
+import "dotenv/config";
 
 const redisConfig: RedisOptions = {
   host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT as unknown as number,
+  port: 27388,
   username: process.env.REDIS_USERNAME,
   password: process.env.REDIS_PWD,
-}
+};
 
 const pub = new Redis(redisConfig);
 
@@ -25,7 +26,7 @@ class SocketService {
       },
     });
 
-    sub.subscribe('Messages')
+    sub.subscribe("Messages");
   }
   public initListeners() {
     const io = this.io;
@@ -38,18 +39,24 @@ class SocketService {
         console.log("New message recieved: ", message);
 
         // publish this message to redis
-        await pub.publish('Messages', JSON.stringify({
-          message
-        }))
+        await pub.publish(
+          "Messages",
+          JSON.stringify({
+            message,
+          })
+        );
       });
     });
 
-    sub.on('message', (channel, message) => {
-      if(channel === 'Messages') {
-        console.log("New message from redis", message)
-        io.emit("message", message)
+    sub.on("message", async (channel, message) => {
+      if (channel === "Messages") {
+        console.log("New message from redis", message);
+        io.emit("message", message);
+
+        await produceMessage(message);
+        console.log("Message produced to Kafka Broker!")
       }
-    })
+    });
   }
   get io() {
     return this._io;
